@@ -115,22 +115,25 @@ namespace clad {
       }
     }
     /// Initial capacity (allocated whenever a value is pushed into empty tape).
-    constexpr static std::size_t _init_capacity = 32;
-    CUDA_HOST_DEVICE void grow() {
-      // If empty, use initial capacity.
-      if (!_capacity)
+constexpr static std::size_t _init_capacity = 32;
+CUDA_HOST_DEVICE void grow() {
+    // If empty, use initial capacity.
+    if (!_capacity)
         _capacity = _init_capacity;
-      else
+    else
         // Double the capacity on each reallocation.
         _capacity *= 2;
-      T* new_data = AllocateRawStorage(_capacity);
 
-      if (!new_data) {
-        // clean up the memory mess just in case!
+    T* new_data = AllocateRawStorage(_capacity);
+
+    if (!new_data) {
+        // Clean up the memory mess just in case!
         destroy(begin(), end());
         printf("Allocation failure during tape resize! Aborting.\n");
         trap(EXIT_FAILURE);
-      }
+    }
+}
+
 
       // Move values from old storage to the new storage. Should call move
       // constructors on non-trivial types, otherwise is expected to use
